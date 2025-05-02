@@ -1,11 +1,18 @@
 let xp = 0;
 let health = 100;
-let gold = 50;
+let gold = 5000;
 let currentWeapon = 0;
 let fighting;
 let monsterHealth;
 let inventory = ["stick"];
+let potionInventory = {
+  "small health": 0,
+  "large health": 0,
+  "rage": 0
+};
 
+
+const stats = document.querySelector("#stats")
 const fundo = document.querySelector("#game");
 const button1 = document.querySelector('#button1');
 const button2 = document.querySelector("#button2");
@@ -18,10 +25,7 @@ const goldText = document.querySelector("#goldText");
 const monsterStats = document.querySelector("#monsterStats");
 const monsterName = document.querySelector("#monsterName");
 const monsterHealthText = document.querySelector("#monsterHealth");
-let potions = ["small health potion(s)", "large health potion(s)", "rage potion(s)"];
-let smPotionsQuantity = 0;
-let lgPotionsQuantity = 0;
-let ragePotionsQuantity = 0;
+
 const weapons = [
   { name: 'stick', power: 5 },
   { name: 'dagger', power: 30 },
@@ -88,18 +92,18 @@ const locations = [
     name: "cave",
     "button text": ["Temple of DOOM", "Frostlight Den", "The Burning Silence", "Go to town square"],
     "button functions": [goDoom, goFrostlight, goBurning, goTown],
-    text: "You enter the cave. You see some monsters."
+    text: "You enter the cave and see 3 different paths. Which one are you picking?"
   },
   {
     name: "fight",
     "button text": ["Attack", "Dodge", "Potions", "Run"],
-    "button functions": [attack, dodge, yourPotions, goTown],
+    "button functions": [attack, dodge, yourPotions, goCave],
     text: "You are fighting a monster."
   },
   {
     name: "kill monster",
-    "button text": ["Go to town square", "Go to town square", "Go to town square"],
-    "button functions": [goTown, goTown, easterEgg],
+    "button text": ["Go to town square", "Go to town square", "Go to town square", "Go to town square"],
+    "button functions": [goTown, goTown, easterEgg, goTown],
     text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
   },
   {
@@ -126,7 +130,7 @@ const locations = [
     "button functions": [goTown],
   },
   {
-    name: "potionInventory",
+    name: "potion inventory",
     "button text": ["sm health potion", "lg health potion", "rage potion", "Back to fight"],
     "button functions": [smPotionAction, lgPotionAction, ragePotionAction, returnToFight],
   },
@@ -183,41 +187,67 @@ function goStore() {
 function goCave() {
   update(locations[3]);
   button4.style.display = "inline-block"
+  fundo.style.setProperty("background", "#ffffff")
+  stats.style.setProperty("color", "#000000")
 }
 
 function goDoom() {
-  update(locations[11])
-  button4.style.display = "none"
-
+  update(locations[11]);
+  button4.style.display = "none";
+  stats.style.setProperty("color", "#ffffff");
+  fundo.style.setProperty("background", "linear-gradient(rgb(13, 107, 5),rgb(178, 233, 51))");
 }
 
 function goFrostlight() {
   update(locations[12])
-  button4.style.display = "none"
-  fundo.style.backgroundColor = "linear-gradient(to bottom, #1a3b5d, #2e8bc0)"
+  button4.style.display = "none";
+  stats.style.setProperty("color", "#ffffff");
+  fundo.style.setProperty("background", "linear-gradient(rgb(63, 151, 240),rgb(126, 184, 218))");
 }
 
 function goBurning() {
-  update(locations[13])
-  button4.style.display = "none"
-  
-  
+  update(locations[13]);
+  button4.style.display = "none";
+  stats.style.setProperty("color", "#ffffff");
+  fundo.style.setProperty("background", "linear-gradient(rgb(218, 28, 28),rgb(231, 123, 72))");
 }
 
 function openInventory() {
-  text.innerHTML = `Inventory: ${inventory.join(", ")}; ${smPotionsQuantity} ${potions[0]}, ${lgPotionsQuantity} ${potions[1]}, ${ragePotionsQuantity} ${potions[2]}`;
+  const allZero = Object.values(potionInventory).every(value => value === 0)
+  text.innerHTML = `<b>Inventory:</b><br>Weapons - ${inventory.join(", ")}<br>`
+  if (allZero) {
+    
+  } else {
+    text.innerHTML += 'Potions - '
+    for (const [key, value] of Object.entries(potionInventory)) {
+      if (value >= 1) {
+        text.innerHTML += `${value} ${key}, `
+      }
+    }
+    text.innerHTML = text.innerHTML.slice(0, -2)
+  }
   button1.innerText = "Go to town square";
   button2.style.display = "none";
   button3.style.display = "none";
   button4.style.display = "none";
   button1.onclick = goTown;
-  // FIX 
 }
 
 // POTIONS
 function yourPotions() {
   update(locations[10])
-  text.innerText = `In your inventory you have: ${smPotionsQuantity} ${potions[0]}, ${lgPotionsQuantity} ${potions[1]}, ${ragePotionsQuantity} ${potions[2]}`
+  const allZero = Object.values(potionInventory).every(value => value === 0)
+  if (allZero) {
+    text.innerHTML = 'You have no potions in your inventory.'
+  } else {
+    text.innerText = 'Potions - '
+    for (const [key, value] of Object.entries(potionInventory)) {
+      if (value >= 1) {
+        text.innerHTML += `${value} ${key}, `
+      }
+    }
+    text.innerHTML = text.innerHTML.slice(0, -2)
+  }
 }
 
 function buyPotions() {
@@ -228,24 +258,24 @@ function smPotion() {
   if (gold >= 15) {
     gold -= 15;
     goldText.innerText = gold;
-    smPotionsQuantity++;
-    if (smPotionsQuantity > 1) {
-      text.innerText = `You now have ${smPotionsQuantity} small potions in your inventory.`
+    potionInventory["small health"] += 1
+    if (potionInventory["small health"] > 1) {
+      text.innerText = `You now have ${potionInventory["small health"]} small potions in your inventory.`
     } else {
-      text.innerText = `You now have ${smPotionsQuantity} small potion in your inventory.`
+      text.innerText = `You now have ${potionInventory["small health"]} small potion in your inventory.`
     }
   } else {
     text.innerText = "You do not have enough gold to buy a small health potion."
   }
 }
 function smPotionAction() {
-  if (smPotionsQuantity > 0) {
+  if (potionInventory["small health"] > 0) {
     update(locations[4]);
     monsterStats.style.display = "block";
     text.innerText = "You used a small health potion";
     health += 25;
     healthText.innerText = health
-    smPotionsQuantity--
+    potionInventory["small health"] -= 1
   } else {
     text.innerText = "You do not have any small potions in your inventory."
   }
@@ -255,24 +285,24 @@ function lgPotion() {
   if (gold >= 70) {
     gold -= 70;
     goldText.innerText = gold;
-    lgPotionsQuantity++;
-    if (lgPotionsQuantity > 1) {
-      text.innerText = `You now have ${lgPotionsQuantity} large health potions in your inventory.`
+    potionInventory["large health"] += 1
+    if (potionInventory["large health"] > 1) {
+      text.innerText = `You now have ${potionInventory["large health"]} large health potions in your inventory.`
     } else {
-      text.innerText = `You now have ${lgPotionsQuantity} large health potion in your inventory.`
+      text.innerText = `You now have ${potionInventory["large health"]} large health potion in your inventory.`
     }
   } else {
     text.innerText = "You do not have enough gold to buy a large health potion."
   }
 }
 function lgPotionAction() {
-  if (lgPotionsQuantity > 0) {
+  if (potionInventory["large health"] > 0) {
     update(locations[4]);
     monsterStats.style.display = "block";
     text.innerText = "You used a large health potion";
     health += 60;
     healthText.innerText = health;
-    lgPotionsQuantity--
+    potionInventory["large health"] -= 1
   } else {
     text.innerText = "You do not have any large health potions in your inventory."
   }
@@ -282,21 +312,21 @@ function ragePotion() {
   if (gold >= 60) {
     gold -= 60;
     goldText.innerText = gold;
-    ragePotionsQuantity++;
-    if (ragePotionsQuantity > 1) {
-      text.innerText = `You now have ${ragePotionsQuantity} rage potions in your inventory.`
+    potionInventory["rage"] += 1
+    if (potionInventory["rage"] > 1) {
+      text.innerText = `You now have ${potionInventory["rage"]} rage potions in your inventory.`
     } else {
-      text.innerText = `You now have ${ragePotionsQuantity} rage potion in your inventory.`
+      text.innerText = `You now have ${potionInventory["rage"]} rage potion in your inventory.`
     }
   } else {
     text.innerText = "You do not have enough gold to buy a rage potion."
   }
 }
 function ragePotionAction() {
-  if (ragePotionsQuantity > 0) {
+  if (potionInventory["rage"] > 0) {
     update(locations[4]);
     monsterStats.style.display = "block"
-    ragePotionsQuantity--
+    potionInventory["rage"] -= 1
     if (monsters[fighting].health > 75) {
       monsterHealth -= 75;
       monsterHealthText.innerText = monsterHealth;
@@ -391,6 +421,7 @@ function fightDjinn() {
 function fightDragon() {
   fighting = 6;
   goFight();
+  button4.onclick = goTown
 }
 
 function goFight() {
@@ -472,6 +503,7 @@ function restart() {
 
 function easterEgg() {
   update(locations[8]);
+  button4.style.display = "none"
 }
 
 function pickTwo() {
