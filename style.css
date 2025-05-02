@@ -3,47 +3,65 @@ body {
     font-size: 1.5rem;
   }
   
-  #text {
-    background-color: #0a0a23;
-    color: #ffffff;
-    padding: 10px;
-  }
+#text {
+  background-color: #0a0a23;
+  color: #ffffff;
+  padding: 10px;
+}
   
-  #game {
-    max-width: 45rem;
-    max-height: 30rem;
-    background-color: #ffffff;
-    color: #ffffff;
-    margin: 3rem auto 0px;
-    padding: 10px;
-  }
+#game {
+  max-width: 46rem;
+  max-height: 30rem;
+  background-color: #ffffff;
+  color: #ffffff;
+  margin: 3rem auto 0px;
+  padding: 10px;
+}
   
-  #controls,
-  #stats {
-    border: 1px solid #0a0a23;
-    padding: 5px;
-    color: #0a0a23;
-  }
+#controls,
+#stats {
+  border: 1px solid #0a0a23;
+  padding: 5px;
+  color: #0a0a23;
+}
+
+#controls {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+[id^=button] {
+  width: 100%;
+}
+
+#monsterStats {
+  display: none;
+  border: 1px solid #0a0a23;
+  padding: 5px;
+  color: #ffffff;
+  background-color: #c70d0d;
+}
   
-  #monsterStats {
-    display: none;
-    border: 1px solid #0a0a23;
-    padding: 5px;
-    color: #ffffff;
-    background-color: #c70d0d;
-  }
+.stat {
+  padding-right: 10px;
+}
   
-  .stat {
-    padding-right: 10px;
+button {
+  cursor: pointer;
+  color: #0a0a23;
+  background-color: #feac32;
+  background-image: linear-gradient(#fecc4c, #ffac33);
+  border: 3px solid #feac32;
+  padding: 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+@media screen and (width <= 600px) {
+  #controls {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    padding-right: 0.8rem;
   }
-  
-  button {
-    cursor: pointer;
-    color: #0a0a23;
-    background-color: #feac32;
-    background-image: linear-gradient(#fecc4c, #ffac33);
-    border: 3px solid #feac32;
-    padding: 0.4rem;
-    font-size: 1rem;
-    font-weight: 600;
-  }
+}
